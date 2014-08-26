@@ -91,9 +91,6 @@ public class XMLParser extends Observable {
     }
 
     private void triggerObserver() {
-        Log.e("Trigger","Observer");
-        Log.e("LUNGHEZZALISTA", listaArticoli.size()+"");
-        Log.e("ELEMENTO LISTA", listaArticoli.get(1).toString());
         setChanged();
         notifyObservers(listaArticoli);
     }
