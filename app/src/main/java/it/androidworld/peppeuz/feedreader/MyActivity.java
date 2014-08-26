@@ -5,6 +5,8 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.ListView;
+import android.widget.Toast;
 
 import com.loopj.android.http.AsyncHttpClient;
 import com.loopj.android.http.AsyncHttpResponseHandler;
@@ -15,19 +17,27 @@ import org.apache.http.Header;
 import org.xmlpull.v1.XmlPullParserException;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Observable;
+import java.util.Observer;
 
 
-public class MyActivity extends ActionBarActivity {
+public class MyActivity extends ActionBarActivity implements Observer
+{
 
     ConnectionHelper cHelper = null;
+    XMLParser xmlParser = null;
+    ArrayList<Articolo> listaArticoli = null;
+    ListView listViewArticoli;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_my);
+        listViewArticoli = (ListView) findViewById(R.id.listViewArticoli);
         cHelper = ConnectionHelper.getInstance();
         loadFeed();
-
     }
 
 
@@ -50,9 +60,14 @@ public class MyActivity extends ActionBarActivity {
         return super.onOptionsItemSelected(item);
     }
 
+    public void addArticolo(Articolo articolo){
+        listaArticoli.add(articolo);
+    }
+
     public void loadFeed()
     {
-        Log.e("Load Feed", "method");
+        xmlParser = XMLParser.getInstance();
+        xmlParser.addObserver(this);
         cHelper.get("feed",null,new AsyncHttpResponseHandler(){
 
             @Override
@@ -60,7 +75,7 @@ public class MyActivity extends ActionBarActivity {
                 Log.i("statusCode", statusCode+"");
                 String xml = new String(responseBody);
                 try {
-                    XMLParser.parseXML(xml);
+                    xmlParser.parseXML(xml);
                 } catch (XmlPullParserException e) {
                     e.printStackTrace();
                 } catch (IOException e) {
@@ -76,4 +91,10 @@ public class MyActivity extends ActionBarActivity {
         });
     }
 
+    @Override
+    public void update(Observable observable, Object data) {
+        listaArticoli = (ArrayList<Articolo>) data;
+        ArticoloAdapter mArticoloAdapter = new ArticoloAdapter(this,listaArticoli);
+        listViewArticoli.setAdapter(mArticoloAdapter);
+    }
 }

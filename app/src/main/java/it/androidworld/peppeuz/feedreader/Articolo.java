@@ -12,6 +12,7 @@ public class Articolo {
     private Date dataPubblicazione;
     private String intro;
     private String contenuto;
+    private String immagine;
 
     public String getTitolo() {
         return titolo;
@@ -49,12 +50,48 @@ public class Articolo {
         this.link = link;
     }
 
+    @Override
+    public String toString() {
+        return "Articolo{" +
+                "titolo='" + titolo + '\'' +
+                ", autore='" + autore + '\'' +
+                ", link='" + link + '\'' +
+                ", dataPubblicazione=" + dataPubblicazione +
+                ", intro='" + intro + '\'' +
+                ", contenuto='" + contenuto + '\'' +
+                ", immagine='" + immagine + '\'' +
+                '}';
+    }
+
     public void setDataPubblicazione(Date dataPubblicazione) {
         this.dataPubblicazione = dataPubblicazione;
     }
 
+    public void setImmagine(String immagine) {
+        this.immagine = immagine;
+    }
+
+    public String getImmagine() {
+
+        return immagine;
+    }
+
+    public Articolo(String titolo, String autore, String link, Date dataPubblicazione, String intro, String contenuto, String immagine) {
+        this.titolo = titolo;
+        this.autore = autore;
+        this.link = link;
+        this.dataPubblicazione = dataPubblicazione;
+        this.intro = intro;
+        this.contenuto = contenuto;
+        this.immagine = immagine;
+
+    }
+
+    public Articolo (){};
+
     public void setIntro(String intro) {
         this.intro = intro;
+
     }
 
     public void setContenuto(String contenuto) {

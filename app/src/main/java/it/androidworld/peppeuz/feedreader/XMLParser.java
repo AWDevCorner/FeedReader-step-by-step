@@ -1,6 +1,7 @@
 package it.androidworld.peppeuz.feedreader;
 
 import android.util.Log;
+import android.util.Xml;
 
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
@@ -8,48 +9,95 @@ import org.xmlpull.v1.XmlPullParserFactory;
 
 import java.io.IOException;
 import java.io.StringReader;
+import java.util.ArrayList;
+import java.util.Observable;
 
 /**
  * Created by peppeuz on 12/08/14.
  */
-public class XMLParser {
+public class XMLParser extends Observable {
 
-    public static void parseXML (String xml)
+    private static XMLParser xmlParser = null;
+    private ArrayList<Articolo> listaArticoli;
+    Articolo articoloCorrente;
+    public static XMLParser getInstance(){
+        if(xmlParser == null)
+        {
+            xmlParser = new XMLParser();
+        }
+        return xmlParser;
+    }
+
+    public XMLParser()
+    {
+        listaArticoli = new ArrayList<Articolo>();
+        articoloCorrente = new Articolo();
+
+    }
+
+    public void parseXML (String xml)
             throws XmlPullParserException, IOException
     {
+
         XmlPullParserFactory factory = XmlPullParserFactory.newInstance();
         factory.setNamespaceAware(false);
         XmlPullParser xpp = factory.newPullParser();
+
         xpp.setInput(new StringReader(xml));
 
         boolean insideItem = false;
 
         int eventType = xpp.getEventType();
+
         while (eventType != XmlPullParser.END_DOCUMENT) {
             if (eventType == XmlPullParser.START_TAG) {
-
                 if (xpp.getName().equalsIgnoreCase("item")) {
                     insideItem = true;
                 } else if (xpp.getName().equalsIgnoreCase("title")) {
                     if (insideItem)
-                        Log.i("Titolo",xpp.nextText());
-                }
+                    {
+                        String titolo= new String(xpp.nextText());
+                        articoloCorrente.setTitolo(titolo);
+                    }
+                    }
                 else if (xpp.getName().equalsIgnoreCase("link")) {
                     if (insideItem)
-                        Log.i("Link",xpp.nextText());
+                    {
+                        String link= new String(xpp.nextText());
+                        articoloCorrente.setLink(link);
+                    }
                 }else if (xpp.getName().equalsIgnoreCase("dc:creator")) {
                     if (insideItem)
-                        Log.i("Autore",xpp.nextText());
+                        {
+                            String autore= new String(xpp.nextText());
+                            Log.e("Autore?", autore);
+                            articoloCorrente.setAutore(autore);
+                        }
                 }else if (xpp.getName().equalsIgnoreCase("description")) {
-                    if (insideItem)
-                        Log.i("Descrizione",xpp.nextText());
+                    if (insideItem) {
+                        String intro= new String(xpp.nextText());
+                        articoloCorrente.setIntro(intro);
+                    }
                 }
             } else if (eventType == XmlPullParser.END_TAG && xpp.getName().equalsIgnoreCase("item")) {
                 insideItem = false;
+                listaArticoli.add(articoloCorrente);
+                articoloCorrente = new Articolo();
             }
-
             eventType = xpp.next();
         }
+        triggerObserver();
 
     }
+
+    private void triggerObserver() {
+        Log.e("Trigger","Observer");
+        Log.e("LUNGHEZZALISTA", listaArticoli.size()+"");
+        Log.e("ELEMENTO LISTA", listaArticoli.get(1).toString());
+        setChanged();
+        notifyObservers(listaArticoli);
+    }
+
+
+
 }
