@@ -3,6 +3,10 @@ package it.androidworld.peppeuz.feedreader;
 import android.util.Log;
 import android.util.Xml;
 
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
+import org.jsoup.select.Elements;
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
 import org.xmlpull.v1.XmlPullParserFactory;
@@ -73,9 +77,22 @@ public class XMLParser extends Observable {
                             Log.e("Autore?", autore);
                             articoloCorrente.setAutore(autore);
                         }
-                }else if (xpp.getName().equalsIgnoreCase("description")) {
-                    if (insideItem) {
+                }else if (xpp.getName().equalsIgnoreCase("content:encoded")) {
+                    if (insideItem)
+                    {
+                        String htmlData= new String(xpp.nextText());
+                        Log.e("contetn?", htmlData);
+                        Document doc = Jsoup.parse(htmlData);
+                        String pic= doc.select("img").first().attr("abs:src");
+                        articoloCorrente.setImmagine(pic);
+                        articoloCorrente.setContenuto(htmlData);
+                    }
+                }
+                else if (xpp.getName().equalsIgnoreCase("description")) {
+                    if (insideItem)
+                    {
                         String intro= new String(xpp.nextText());
+                        Log.e("intro", intro);
                         articoloCorrente.setIntro(intro);
                     }
                 }

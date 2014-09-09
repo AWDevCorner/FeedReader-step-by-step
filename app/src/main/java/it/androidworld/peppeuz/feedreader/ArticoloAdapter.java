@@ -10,6 +10,8 @@ import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.loopj.android.image.SmartImageView;
+
 import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.List;
@@ -55,10 +57,11 @@ public class ArticoloAdapter extends BaseAdapter {
 
         TextView titolo = (TextView) vi.findViewById(R.id.titolo);
         TextView autore = (TextView) vi.findViewById(R.id.autore);
-        ImageView img = (ImageView) vi.findViewById(R.id.immagine);
+        SmartImageView immagine = (SmartImageView) vi.findViewById(R.id.immagine);
         Articolo articoloCorrente = listaArticoli.get(position);
         titolo.setText(articoloCorrente.getTitolo());
         autore.setText(articoloCorrente.getAutore());
+        immagine.setImageUrl(articoloCorrente.getImmagine());
         return vi;
     }
 }
