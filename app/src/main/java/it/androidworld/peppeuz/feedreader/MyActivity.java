@@ -1,10 +1,15 @@
 package it.androidworld.peppeuz.feedreader;
 
+import android.app.Activity;
+import android.content.Context;
+import android.content.Intent;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.Toast;
 
@@ -28,8 +33,9 @@ public class MyActivity extends ActionBarActivity implements Observer
 
     ConnectionHelper cHelper = null;
     XMLParser xmlParser = null;
-    ArrayList<Articolo> listaArticoli = null;
+    public static ArrayList<Articolo> listaArticoli = null;
     ListView listViewArticoli;
+    Context ctx;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -37,6 +43,7 @@ public class MyActivity extends ActionBarActivity implements Observer
         setContentView(R.layout.activity_my);
         listViewArticoli = (ListView) findViewById(R.id.listViewArticoli);
         cHelper = ConnectionHelper.getInstance();
+        ctx= this;
         loadFeed();
     }
 
@@ -96,5 +103,13 @@ public class MyActivity extends ActionBarActivity implements Observer
         listaArticoli = (ArrayList<Articolo>) data;
         ArticoloAdapter mArticoloAdapter = new ArticoloAdapter(this,listaArticoli);
         listViewArticoli.setAdapter(mArticoloAdapter);
+        listViewArticoli.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            public void onItemClick(AdapterView<?> av, View view, int i, long l)
+            {
+                Intent toFullArticle = new Intent(ctx, FullArticle.class);
+                toFullArticle.putExtra("articleIndex",i);
+                startActivity(toFullArticle);
+            }
+        });
     }
 }
