@@ -1,6 +1,7 @@
 package it.androidworld.peppeuz.feedreader;
 
 import android.app.Activity;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.support.v7.app.ActionBarActivity;
@@ -33,18 +34,23 @@ public class MyActivity extends ActionBarActivity implements Observer
 
     ConnectionHelper cHelper = null;
     XMLParser xmlParser = null;
-    public static ArrayList<Articolo> listaArticoli = null;
+    ArrayList<Articolo> listaArticoli = null;
     ListView listViewArticoli;
     Context ctx;
+    ProgressDialog myProgressDialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_my);
+        ctx= this;
+        myProgressDialog = new ProgressDialog(ctx);
+        myProgressDialog.setCancelable(false);
+        myProgressDialog.show();
         listViewArticoli = (ListView) findViewById(R.id.listViewArticoli);
         cHelper = ConnectionHelper.getInstance();
-        ctx= this;
         loadFeed();
+        myProgressDialog.setMessage("Caricamento...");
     }
 
 
@@ -100,6 +106,7 @@ public class MyActivity extends ActionBarActivity implements Observer
 
     @Override
     public void update(Observable observable, Object data) {
+        myProgressDialog.dismiss();
         listaArticoli = (ArrayList<Articolo>) data;
         ArticoloAdapter mArticoloAdapter = new ArticoloAdapter(this,listaArticoli);
         listViewArticoli.setAdapter(mArticoloAdapter);
@@ -107,7 +114,8 @@ public class MyActivity extends ActionBarActivity implements Observer
             public void onItemClick(AdapterView<?> av, View view, int i, long l)
             {
                 Intent toFullArticle = new Intent(ctx, FullArticle.class);
-                toFullArticle.putExtra("articleIndex",i);
+                toFullArticle.putExtra("titoloArticolo",listaArticoli.get(i).getTitolo());
+                toFullArticle.putExtra("contenutoArticolo",listaArticoli.get(i).getContenuto());
                 startActivity(toFullArticle);
             }
         });

@@ -1,5 +1,7 @@
 package it.androidworld.peppeuz.feedreader;
 
+import android.app.ProgressDialog;
+import android.content.Context;
 import android.graphics.Color;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
@@ -23,12 +25,12 @@ public class FullArticle extends ActionBarActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_full_article);
         article= (WebView) findViewById(R.id.articleTxt);
-        Bundle extras = getIntent().getExtras();
-        int articleIndex= extras.getInt("articleIndex");
-        Articolo a = MyActivity.listaArticoli.get(articleIndex);
-        article.getSettings().setJavaScriptEnabled(true);
         article.setBackgroundColor(Color.TRANSPARENT);
-        article.loadDataWithBaseURL(null, "<style>img{display: inline; height: auto; max-width: 100%;}</style>\n"+"<h2>"+a.getTitolo()+"</h2>"+a.getContenuto(), null, null, null);
+        Bundle extras = getIntent().getExtras();
+        String titolo = extras.getString("titoloArticolo");
+        String contenuto = extras.getString("contenutoArticolo");
+        article.getSettings().setJavaScriptEnabled(true);
+        article.loadDataWithBaseURL(null, "<style>img{display: inline; height: auto; max-width: 100%;}</style>\n"+"<h2>"+titolo+"</h2>"+contenuto, null, null, null);
 
     }
 
