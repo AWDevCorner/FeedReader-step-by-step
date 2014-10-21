@@ -4,6 +4,8 @@ import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
+import android.os.Handler;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -29,7 +31,7 @@ import java.util.Observable;
 import java.util.Observer;
 
 
-public class MyActivity extends ActionBarActivity implements Observer
+public class MyActivity extends ActionBarActivity implements Observer, SwipeRefreshLayout.OnRefreshListener
 {
 
     ConnectionHelper cHelper = null;
@@ -38,6 +40,9 @@ public class MyActivity extends ActionBarActivity implements Observer
     ListView listViewArticoli;
     Context ctx;
     ProgressDialog myProgressDialog;
+    SwipeRefreshLayout mSwipeRefreshLayout;
+
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -46,18 +51,29 @@ public class MyActivity extends ActionBarActivity implements Observer
         ctx= this;
         myProgressDialog = new ProgressDialog(ctx);
         myProgressDialog.setCancelable(false);
-        myProgressDialog.show();
+        mSwipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.container);
+        mSwipeRefreshLayout.setOnRefreshListener(this);
+        mSwipeRefreshLayout.setColorSchemeResources(android.R.color.holo_blue_bright,
+                android.R.color.holo_green_light,
+                android.R.color.holo_orange_light,
+                android.R.color.holo_red_light);
         listViewArticoli = (ListView) findViewById(R.id.listViewArticoli);
         cHelper = ConnectionHelper.getInstance();
+        createDialog();
         loadFeed();
-        myProgressDialog.setMessage("Caricamento...");
     }
 
 
+    public void createDialog()
+    {
+        myProgressDialog.show();
+        myProgressDialog.setMessage("Caricamento...");
+    }
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.my, menu);
+
         return true;
     }
 
@@ -79,12 +95,15 @@ public class MyActivity extends ActionBarActivity implements Observer
 
     public void loadFeed()
     {
+        Toast.makeText(this, "Refresh", Toast.LENGTH_SHORT).show();
         xmlParser = XMLParser.getInstance();
         xmlParser.addObserver(this);
-        cHelper.get("feed",null,new AsyncHttpResponseHandler(){
+        cHelper.get("feed",null,new AsyncHttpResponseHandler()
+        {
 
             @Override
-            public void onSuccess(int statusCode, Header[] headers, byte[] responseBody) {
+            public void onSuccess(int statusCode, Header[] headers, byte[] responseBody)
+            {
                 Log.i("statusCode", statusCode+"");
                 String xml = new String(responseBody);
                 try {
@@ -106,7 +125,7 @@ public class MyActivity extends ActionBarActivity implements Observer
 
     @Override
     public void update(Observable observable, Object data) {
-        myProgressDialog.dismiss();
+        mSwipeRefreshLayout.setRefreshing(false);
         listaArticoli = (ArrayList<Articolo>) data;
         ArticoloAdapter mArticoloAdapter = new ArticoloAdapter(this,listaArticoli);
         listViewArticoli.setAdapter(mArticoloAdapter);
@@ -116,8 +135,16 @@ public class MyActivity extends ActionBarActivity implements Observer
                 Intent toFullArticle = new Intent(ctx, FullArticle.class);
                 toFullArticle.putExtra("titoloArticolo",listaArticoli.get(i).getTitolo());
                 toFullArticle.putExtra("contenutoArticolo",listaArticoli.get(i).getContenuto());
+                toFullArticle.putExtra("link", listaArticoli.get(i).getLink());
                 startActivity(toFullArticle);
             }
         });
+        myProgressDialog.dismiss();
+
+    }
+
+    @Override
+    public void onRefresh() {
+                loadFeed();
     }
 }

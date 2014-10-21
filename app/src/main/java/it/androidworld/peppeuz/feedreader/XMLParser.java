@@ -74,14 +74,12 @@ public class XMLParser extends Observable {
                     if (insideItem)
                         {
                             String autore= new String(xpp.nextText());
-                            Log.e("Autore?", autore);
                             articoloCorrente.setAutore(autore);
                         }
                 }else if (xpp.getName().equalsIgnoreCase("content:encoded")) {
                     if (insideItem)
                     {
                         String htmlData= new String(xpp.nextText());
-                        Log.e("contetn?", htmlData);
                         Document doc = Jsoup.parse(htmlData);
                         String pic= doc.select("img").first().attr("abs:src");
                         articoloCorrente.setImmagine(pic);
@@ -92,7 +90,6 @@ public class XMLParser extends Observable {
                     if (insideItem)
                     {
                         String intro= new String(xpp.nextText());
-                        Log.e("intro", intro);
                         articoloCorrente.setIntro(intro);
                     }
                 }

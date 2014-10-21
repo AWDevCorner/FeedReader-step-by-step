@@ -5,6 +5,7 @@ import android.util.Log;
 import com.loopj.android.http.*;
 
 import org.apache.http.Header;
+import org.apache.http.client.params.ClientPNames;
 
 /**
  * Created by peppeuz on 11/08/14.
@@ -17,6 +18,7 @@ public class ConnectionHelper {
 
     private ConnectionHelper(){
          client = new AsyncHttpClient();
+        client.getHttpClient().getParams().setParameter(ClientPNames.ALLOW_CIRCULAR_REDIRECTS, true);
     }
 
     public static ConnectionHelper getInstance(){
