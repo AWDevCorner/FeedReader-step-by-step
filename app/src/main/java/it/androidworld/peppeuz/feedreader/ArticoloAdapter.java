@@ -63,16 +63,20 @@ public class ArticoloAdapter extends BaseAdapter {
         RelativeLayout layout = (RelativeLayout) vi.findViewById(R.id.mainLayout);
         SmartImageView immagine = (SmartImageView) vi.findViewById(R.id.immagine);
         Articolo articoloCorrente = listaArticoli.get(position);
-        if(articoloCorrente.isLetto())
-        {
-            vi.setBackgroundColor(Color.LTGRAY);
-        }else
-        {
-            vi.setBackgroundColor(Color.TRANSPARENT);
-        }
         titolo.setText(articoloCorrente.getTitolo());
         autore.setText(articoloCorrente.getAutore());
         immagine.setImageUrl(articoloCorrente.getImmagine());
+        if(articoloCorrente.isLetto())
+        {
+            titolo.setTextColor(Color.LTGRAY);
+            autore.setTextColor(Color.LTGRAY);
+            immagine.setAlpha(0.50f);
+        }else
+        {
+            titolo.setTextColor(Color.BLACK);
+            autore.setTextColor(Color.BLACK);
+            immagine.setAlpha(1f);
+        }
         return vi;
     }
 }
