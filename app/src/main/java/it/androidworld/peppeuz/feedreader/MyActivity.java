@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Handler;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.ActionBarActivity;
@@ -41,6 +42,7 @@ public class MyActivity extends ActionBarActivity implements Observer, SwipeRefr
     Context ctx;
     ProgressDialog myProgressDialog;
     SwipeRefreshLayout mSwipeRefreshLayout;
+    ArticoloAdapter mArticoloAdapter;
 
 
 
@@ -95,7 +97,6 @@ public class MyActivity extends ActionBarActivity implements Observer, SwipeRefr
 
     public void loadFeed()
     {
-        Toast.makeText(this, "Refresh", Toast.LENGTH_SHORT).show();
         xmlParser = XMLParser.getInstance();
         xmlParser.addObserver(this);
         cHelper.get("feed",null,new AsyncHttpResponseHandler()
@@ -127,7 +128,7 @@ public class MyActivity extends ActionBarActivity implements Observer, SwipeRefr
     public void update(Observable observable, Object data) {
         mSwipeRefreshLayout.setRefreshing(false);
         listaArticoli = (ArrayList<Articolo>) data;
-        ArticoloAdapter mArticoloAdapter = new ArticoloAdapter(this,listaArticoli);
+        mArticoloAdapter = new ArticoloAdapter(this,listaArticoli);
         listViewArticoli.setAdapter(mArticoloAdapter);
         listViewArticoli.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             public void onItemClick(AdapterView<?> av, View view, int i, long l)
@@ -136,6 +137,7 @@ public class MyActivity extends ActionBarActivity implements Observer, SwipeRefr
                 toFullArticle.putExtra("titoloArticolo",listaArticoli.get(i).getTitolo());
                 toFullArticle.putExtra("contenutoArticolo",listaArticoli.get(i).getContenuto());
                 toFullArticle.putExtra("link", listaArticoli.get(i).getLink());
+                listaArticoli.get(i).setLetto(true);
                 startActivity(toFullArticle);
             }
         });
@@ -143,8 +145,19 @@ public class MyActivity extends ActionBarActivity implements Observer, SwipeRefr
 
     }
 
+    @Override protected void onResume() {
+        super.onResume();
+        if(mArticoloAdapter!=null) {
+            mArticoloAdapter = new ArticoloAdapter(this, listaArticoli);
+            listViewArticoli.setAdapter(mArticoloAdapter);
+
+        }
+    }
+
     @Override
     public void onRefresh() {
-                loadFeed();
+
+        listaArticoli.clear();
+        loadFeed();
     }
 }

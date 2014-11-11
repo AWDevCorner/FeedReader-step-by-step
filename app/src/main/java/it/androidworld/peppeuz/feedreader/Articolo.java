@@ -14,6 +14,16 @@ public class Articolo {
     private String contenuto;
     private String immagine;
 
+    public boolean isLetto() {
+        return letto;
+    }
+
+    public void setLetto(boolean letto) {
+        this.letto = letto;
+    }
+
+    private boolean letto;
+
     public String getTitolo() {
         return titolo;
     }
@@ -84,7 +94,7 @@ public class Articolo {
         this.intro = intro;
         this.contenuto = contenuto;
         this.immagine = immagine;
-
+        this.letto = false;
     }
 
     public Articolo (){};

@@ -2,12 +2,15 @@ package it.androidworld.peppeuz.feedreader;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.res.Resources;
+import android.graphics.Color;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.loopj.android.image.SmartImageView;
@@ -57,8 +60,16 @@ public class ArticoloAdapter extends BaseAdapter {
 
         TextView titolo = (TextView) vi.findViewById(R.id.titolo);
         TextView autore = (TextView) vi.findViewById(R.id.autore);
+        RelativeLayout layout = (RelativeLayout) vi.findViewById(R.id.mainLayout);
         SmartImageView immagine = (SmartImageView) vi.findViewById(R.id.immagine);
         Articolo articoloCorrente = listaArticoli.get(position);
+        if(articoloCorrente.isLetto())
+        {
+            vi.setBackgroundColor(Color.LTGRAY);
+        }else
+        {
+            vi.setBackgroundColor(Color.TRANSPARENT);
+        }
         titolo.setText(articoloCorrente.getTitolo());
         autore.setText(articoloCorrente.getAutore());
         immagine.setImageUrl(articoloCorrente.getImmagine());
